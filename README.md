@@ -3,7 +3,7 @@ Temporary storage for the code for my Thesis
 # Datasets
 Dataset shards must be uploaded under a datasets directory:
   This is so that the user has images already resized for memory occupation and download times considerations.
-  ![Sample](./assets/wakevision_random.png)
+  <img src="/assets/wakevision_random.png" width="600" alt="Diagram">
 # Models
 pickled models should be uploaded under a models directory
 
