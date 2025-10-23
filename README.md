@@ -21,6 +21,10 @@ This section will detail the training process:
 - Where are the models imported from
 - Transfer Learning
 - On-line learning
+- Learning rate exploration and scheduling
+- Weight Decay
+- Accuracy & Loss charts
+- 
   
 # TO DO
 - import pretrainer.py and eventually modules
