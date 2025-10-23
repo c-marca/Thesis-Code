@@ -10,11 +10,18 @@ Dataset shards must be uploaded under a datasets directory: DONE
   
 # Models
 Pickled models should be uploaded under a models directory: DONE
+Pickled models can be used as training checkpoints.
 
 # External
 Imported PULP-Trainlib main branch
 
 Future Fork of PULP-Trainlib with model deployers
+# Training
+This section will detail the training process:
+- Where are the models imported from
+- Transfer Learning
+- On-line learning
+  
 # TO DO
 - import pretrainer.py and eventually modules
 - Give dependency list so that users can install them, include commands snippets
