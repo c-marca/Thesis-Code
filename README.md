@@ -6,7 +6,7 @@ Dataset shards must be uploaded under a datasets directory: DONE
   
   <img src="/assets/wakevision_random.png" width="400" alt="Diagram">
   - dataset_generator to generate Wake Vision Dataset like the user wants
-    - can be improved by adding argparse argumnents to script
+    - can be improved by adding argparse arguments to script
   
 # Models
 Pickled models should be uploaded under a models directory: DONE
