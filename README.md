@@ -11,6 +11,8 @@ Dataset shards must be uploaded under a datasets directory: DONE
 # Models
 Pickled models should be uploaded under a models directory: DONE
 
+# External
+Imported PULP-Trainlib main branch
 
 Future Fork of PULP-Trainlib with model deployers
 # TO DO
