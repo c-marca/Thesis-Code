@@ -43,6 +43,11 @@ Pickled models are uploaded under a models directory:
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
 
+ # Assets
+ Images and .onnx and similaria
+ # Logs
+ Memory occupation logs,training logs
+ 
 Future Fork of PULP-Trainlib with model deployers
 # Training
 This section will detail the training process:
