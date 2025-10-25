@@ -1,5 +1,11 @@
 # Thesis-Code
 Storage for the code for my EE Thesis
+# Extra requirements ([PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) setup needed)
+
+  ```bash
+pip install timm
+```
+
 # Datasets
 Dataset shards are under a datasets directory: 
   Shards are already resized to 128 resolution in order for memory occupation, download and training overhead considerations.
@@ -29,7 +35,7 @@ Pickled models are uploaded under a models directory:
   Pickled models can be used as training checkpoints.
 
 # External
-Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib)PULP-Trainlib main branch
+Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
 
 Future Fork of PULP-Trainlib with model deployers
