@@ -5,6 +5,8 @@ Storage for the code for my EE Thesis.
 
   ```bash
 pip install timm
+pip install pytorchcv
+pip install onnx
 ```
 
 # Datasets
