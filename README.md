@@ -1,5 +1,6 @@
 # Thesis-Code
-Storage for the code for my EE Thesis
+Storage for the code for my EE Thesis.
+
 # Extra requirements ([PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) setup needed)
 
   ```bash
@@ -7,6 +8,8 @@ pip install timm
 ```
 
 # Datasets
+-Wake Vision
+
 Dataset shards are under a datasets directory: 
   Shards are already resized to 128 resolution in order for memory occupation, download and training overhead considerations.
 
