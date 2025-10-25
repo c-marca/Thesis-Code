@@ -29,7 +29,8 @@ Pickled models are uploaded under a models directory:
   Pickled models can be used as training checkpoints.
 
 # External
-Imported PULP-Trainlib main branch
+Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib)PULP-Trainlib main branch
+as a subtree.
 
 Future Fork of PULP-Trainlib with model deployers
 # Training
@@ -40,7 +41,9 @@ This section will detail the training process:
 - Learning rate exploration and scheduling
 - Weight Decay
 - Accuracy & Loss charts
-- 
+
+MobileNetV1 is imported from pytorchcv
+
   
 # TO DO
 - Give dependency list so that users can install them, include commands snippets
