@@ -13,7 +13,17 @@ Dataset shards are under a datasets directory:
   - dataset_generator.py to generate Wake Vision Dataset like the user wants
   - User can modify dataset_generator.py to change resolution, image size, split, shard size.
     - can be improved by adding argparse arguments to script
-  
+  ```python
+tfm = transforms.Compose([transforms.Resize((128,128)),
+                          transforms.ToTensor(),
+                          transforms.ConvertImageDtype(torch.uint8)])
+
+ds = load_dataset("Harvard-Edge/Wake-Vision", split="test", streaming=True)
+
+N = 20_000
+
+SHARD = 4096
+```
 # Models
 Pickled models are uploaded under a models directory:
   Pickled models can be used as training checkpoints.
