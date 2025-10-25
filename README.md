@@ -10,7 +10,8 @@ Dataset shards are under a datasets directory:
 
   
   Shards have been generated 
-  - dataset_generator to generate Wake Vision Dataset like the user wants
+  - dataset_generator.py to generate Wake Vision Dataset like the user wants
+  - User can modify dataset_generator.py to change resolution, image size, split, shard size.
     - can be improved by adding argparse arguments to script
   
 # Models
