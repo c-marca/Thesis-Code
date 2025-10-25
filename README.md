@@ -3,7 +3,12 @@ Storage for the code for my EE Thesis
 # Datasets
 Dataset shards are under a datasets directory: 
   Shards are already resized to 128 resolution in order for memory occupation, download and training overhead considerations.
+
+  
   <img src="/assets/wakevision_random.png" width="300" alt="Diagram">
+
+
+  
   Shards have been generated 
   - dataset_generator to generate Wake Vision Dataset like the user wants
     - can be improved by adding argparse arguments to script
