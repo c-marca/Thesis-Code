@@ -53,7 +53,9 @@ This section will detail the training process:
 - Weight Decay
 - Accuracy & Loss charts
 
-MobileNetV1 is imported from pytorchcv
+-MobileNetV1 is imported from pytorchcv
+-SqueezeNet is imported from timm
+
 
   
 # TO DO
