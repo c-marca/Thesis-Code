@@ -39,14 +39,22 @@ SHARD = 4096
 Pickled models are uploaded under a models directory:
   Pickled models can be used as training checkpoints.
 
+
+-MobileNetV1 is imported from pytorchcv
+-SqueezeNet is imported from timm
+
 # External
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
 
  # Assets
- Images and .onnx and similaria
+ Images and .onnx and similar
  # Logs
  Memory occupation logs,training logs
+* Torchsummary does not take into account the fact that one can discard the activations of the layers before the last updatable layer.
+  * see torchsummary log     
+* PULP-TrainLib's Deployer does, so we take this as the memory occupation figure.
+  * see respective log 
  
 Future Fork of PULP-Trainlib with model deployers
 # Training
@@ -58,8 +66,6 @@ This section will detail the training process:
 - Weight Decay
 - Accuracy & Loss charts
 
--MobileNetV1 is imported from pytorchcv
--SqueezeNet is imported from timm
 
 
   
