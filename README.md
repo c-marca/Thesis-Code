@@ -4,9 +4,10 @@ Storage for the code for my EE Thesis.
 # Extra requirements ([PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) setup needed)
 
   ```bash
-pip install timm
-pip install pytorchcv
-pip install onnx
+sudo apt install git-lfs
+python -m pip install timm
+python -m pip install pytorchcv
+python -m pip install onnx
 ```
 
 # Datasets
