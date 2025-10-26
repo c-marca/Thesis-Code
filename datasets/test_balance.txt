@@ -1,0 +1,20 @@
+person label counts: {0: 10029, 1: 9971}
+FG positive counts:
+  predominantly_female: 801
+  predominantly_male: 1372
+  young: 331
+  middle_age: 2348
+  older: 102
+  gender_unknown: 1727
+  age_unknown: 1318
+  near: 5946
+  medium_distance: 2400
+  far: 943
+  bright: 1272
+  dark: 3361
+  normal_lighting: 15367
+  depiction: 754
+  person_depiction: 376
+  non-person_depiction: 378
+  non-person_non-depiction: 9275
+  body_part: 20000
