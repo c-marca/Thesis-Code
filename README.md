@@ -69,6 +69,13 @@ This section will detail the training process:
 - Weight Decay
 - Accuracy & Loss charts
 
+Table with model accuracy and memory occupation, comparison with the state of the art:
+| Column 1 | Column 2 | Column 3 |
+|-----------|-----------|-----------|
+| A         | B         | C         |
+| 1         | 2         | 3         |
+
+
 # Papers
 - MobileNet
 - MobileNetFD
