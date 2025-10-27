@@ -22,8 +22,10 @@ Dataset shards are under a datasets directory:
   
   <img src="/assets/wakevision_random.png" width="300" alt="Diagram">
 
-
-  
+TO PULL SHARDS:
+```bash
+git lfs pull
+  ```
   Shards have been generated 
   - dataset_generator.py to generate Wake Vision Dataset like the user wants
   - User can modify dataset_generator.py to change resolution, image size, split, shard size.
