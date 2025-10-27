@@ -20,7 +20,7 @@ python -m pip install datasets
   - 10k imgs val split  (469 MB)
     
 Dataset shards are under a datasets directory: 
-  Shards are already resized to 128 resolution in order for memory occupation, download and training overhead considerations.
+  Shards are already resized to 128 resolution  for memory occupation, download and training overhead considerations.
 
   
   <img src="/assets/wakevision_random.png" width="300" alt="Diagram">
@@ -79,8 +79,7 @@ as a subtree.
 Future Fork of PULP-Trainlib with model deployers
 # Training
 This section will detail the training process:
-- Where are the models imported from
-- Transfer Learning
+- Transfer Learning (FineTuning)
 - On-line learning
 - Learning rate exploration and scheduling
 - Weight Decay
