@@ -99,7 +99,4 @@ Table with model accuracy and memory occupation, comparison with the state of th
 - Give dependency list so that users can install them, include commands snippets
 - add results of experiments , plots, logs
 - add finetuner.py
-- add on-line_trainer.py
-- export .onnx files
-- add models.py
   
