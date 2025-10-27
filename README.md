@@ -64,7 +64,7 @@ AVAILABLE MODELS:
 - MobileNet is imported from pytorchcv
 - MobileNetFD is imported from pytorchcv 
 - SqueezeNet is imported from timm
-
+PRETRAINING LOGS ARE PROVIDED 
 # External
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
