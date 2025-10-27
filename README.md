@@ -8,6 +8,9 @@ sudo apt install git-lfs
 python -m pip install timm
 python -m pip install pytorchcv
 python -m pip install onnx
+python -m pip install tqdm
+python -m pip install datasets
+
 ```
 
 # Datasets
