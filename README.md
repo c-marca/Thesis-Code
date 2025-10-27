@@ -50,7 +50,7 @@ SHARD = 4096
 Dataset composition by class and finegrained can be seen in respective (split)_balance.txt
 
 # Models
-A
+
 Pickled models are uploaded under a models directory:
   Pickled models can be used as training checkpoints.
 AVAILABLE MODELS:
