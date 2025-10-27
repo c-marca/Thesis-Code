@@ -69,6 +69,9 @@ AVAILABLE MODELS:
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
 
+Inside there are Custom Deployers for MobileNet and MobileNetFD.
+
+
  # Assets
  Images and .onnx and similar
  # Logs
