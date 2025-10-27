@@ -110,4 +110,4 @@ Memory figures are taken from PULP-Trainlib's Deployer.
 - Give full dependency list so that users can install them, include commands snippets
 - add results of experiments , plots, logs
 - add finetuner.py
-
+- add Thesis stub
