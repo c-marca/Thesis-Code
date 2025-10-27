@@ -42,12 +42,17 @@ SHARD = 4096
 Dataset composition by class and finegrained can be seen in respective (split)_balance.txt
 
 # Models
+A
 Pickled models are uploaded under a models directory:
   Pickled models can be used as training checkpoints.
+AVAILABLE MODELS:
+- MobileNetLP (setup for Linear Probe Transfer Learning)
+- MobileNet_no_pre (no pretraining)
+- MobileNetFD (setup for Linear Probe Transfer Learning)
 
-
--MobileNetV1 is imported from pytorchcv
--SqueezeNet is imported from timm
+- MobileNet is imported from pytorchcv
+- MobileNetFD is imported from pytorchcv 
+- SqueezeNet is imported from timm
 
 # External
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
