@@ -12,7 +12,10 @@ python -m pip install onnx
 
 # Datasets
 -Wake Vision
-
+  - 100k imgs train quality split
+  - 20k imgs test split
+  - 10k imgs val split
+    
 Dataset shards are under a datasets directory: 
   Shards are already resized to 128 resolution in order for memory occupation, download and training overhead considerations.
 
