@@ -69,6 +69,10 @@ This section will detail the training process:
 - Weight Decay
 - Accuracy & Loss charts
 
+# Papers
+- MobileNet
+- MobileNetFD
+- SqueezeNet
 
 
   
