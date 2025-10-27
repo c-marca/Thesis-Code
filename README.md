@@ -96,6 +96,7 @@ Table with model accuracy and memory occupation, comparison with the state of th
 
   
 # TO DO
+- add training shards
 - Give dependency list so that users can install them, include commands snippets
 - add results of experiments , plots, logs
 - add finetuner.py
