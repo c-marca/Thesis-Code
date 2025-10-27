@@ -28,6 +28,9 @@ Dataset shards are under a datasets directory:
   - dataset_generator.py to generate Wake Vision Dataset like the user wants
   - User can modify dataset_generator.py to change resolution, image size, split, shard size.
     - can be improved by adding argparse arguments to script
+
+ Wake Vision has finegrained tags for different contexts:
+ 
   ```python
 tfm = transforms.Compose([transforms.Resize((128,128)),
                           transforms.ToTensor(),
