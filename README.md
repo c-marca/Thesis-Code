@@ -111,3 +111,4 @@ Memory figures are taken from PULP-Trainlib's Deployer.
 - add results of experiments , plots, logs
 - add finetuner.py
 - add Thesis stub
+- use TrainLib tests to profile performance of NNs
