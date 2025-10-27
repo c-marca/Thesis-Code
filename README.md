@@ -92,21 +92,21 @@ This section will detail the training process:
 - Accuracy & Loss charts
 
 Table with model accuracy and memory occupation, comparison with the state of the art:
-| Models     | Memory     | Accuracy |
-|------------|------------|----------|
-| MobileNet   | 2 MB      | x        |          |
-|MobileNetFD  | 2.1 MB    | x        |
+| Models     | Memory     | Test Accuracy |
+|------------|------------|---------------|
+| MobileNet   | 2 MB      | x             |          |
+|MobileNetFD  | 2.1 MB    | x             |
 
 
 # Papers
 - MobileNet: https://arxiv.org/abs/1704.04861
 - MobileNetFD: https://arxiv.org/abs/1802.03750
-- SqueezeNet
+- SqueezeNet:
 
 
   
 # TO DO
-- Give dependency list so that users can install them, include commands snippets
+- Give full dependency list so that users can install them, include commands snippets
 - add results of experiments , plots, logs
 - add finetuner.py
-  
+
