@@ -70,10 +70,10 @@ This section will detail the training process:
 - Accuracy & Loss charts
 
 Table with model accuracy and memory occupation, comparison with the state of the art:
-| Column 1 | Column 2 | Column 3 |
-|-----------|-----------|-----------|
-| A         | B         | C         |
-| 1         | 2         | 3         |
+| Models     | Memory | Accuracy |
+|------------|--------|----------|
+| MobileNet   | 2 MB  | x        |          |
+|MobileNetFD  |  x    | x        |
 
 
 # Papers
