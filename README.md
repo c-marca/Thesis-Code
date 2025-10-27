@@ -68,8 +68,9 @@ as a subtree.
 * Torchsummary does not take into account the fact that one can discard the activations of the layers before the last updatable layer.
   * see torchsummary log     
 * PULP-TrainLib's Deployer does, so we take this as the memory occupation figure.
-  * see respective log 
- 
+  * see respective log
+-Pretraining logs
+ https://pypi.org/project/pytorchcv/
 Future Fork of PULP-Trainlib with model deployers
 # Training
 This section will detail the training process:
