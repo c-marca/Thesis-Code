@@ -51,8 +51,11 @@ Dataset composition by class and finegrained can be seen in respective (split)_b
 
 # Models
 models.py makes them available
+
 Pickled models are uploaded under a models directory:
+
   Pickled models can be used as training checkpoints.
+  
 AVAILABLE MODELS:
 - MobileNetLP (setup for Linear Probe Transfer Learning)
 - MobileNet_no_pre (no pretraining)
