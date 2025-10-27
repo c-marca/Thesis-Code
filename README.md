@@ -94,8 +94,8 @@ Table with model accuracy and memory occupation, comparison with the state of th
 
 
 # Papers
-- MobileNet
-- MobileNetFD
+- MobileNet: https://arxiv.org/abs/1704.04861
+- MobileNetFD: https://arxiv.org/abs/1802.03750
 - SqueezeNet
 
 
