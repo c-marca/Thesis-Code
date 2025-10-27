@@ -97,6 +97,7 @@ Table with model accuracy and memory occupation, comparison with the state of th
 | MobileNet   | 2 MB      | x             |          |
 |MobileNetFD  | 2.1 MB    | x             |
 
+Memory figures are taken from PULP-Trainlib's Deployer.
 
 # Papers
 - MobileNet: https://arxiv.org/abs/1704.04861
