@@ -1,12 +1,9 @@
-
 import torch
 from pytorchcv.model_provider import get_model as ptcv_get_model
 import torch.nn as nn
-import timm
-
-m = ptcv_get_model('mobilenet_wd4', pretrained=True)  # wd4 = width 0.25
+#m = ptcv_get_model('mobilenet_wd4', pretrained=True)  # wd4 = width 0.25
 # replace head for your classes
-m.output = nn.Linear(m.output.in_features, 2)
+#m.output = nn.Linear(m.output.in_features, 2)
 
 # replace avgpool with adaptivepool in order to support resolution changes from the original 224 resolution
 def replace_avgpool_with_adapt(module):                             
@@ -16,7 +13,7 @@ def replace_avgpool_with_adapt(module):
         else:
             replace_avgpool_with_adapt(child)
 
-replace_avgpool_with_adapt(m)
+#replace_avgpool_with_adapt(m)
 
 # optional: freeze backbone
 
@@ -53,15 +50,11 @@ class PartialFT_MobileNet(nn.Module):
         return self.head(x)                      # trainable head only
 '''
 
-MobileNetLP = FrozenBackboneMobileNet(m)
+#MobileNetLP = FrozenBackboneMobileNet(m)
 
-MobileNetFD= ptcv_get_model('fdmobilenet_wd4', pretrained=True)  # FD-MobileNet ×0.25
+MobileNetFD = ptcv_get_model('fdmobilenet_wd4', pretrained=True)  # FD-MobileNet ×0.25
 
 # replace classifier for 2 classes
-MobileNetFD.output = nn.Linear(m.output.in_features, 2)
+MobileNetFD.output = nn.Linear(MobileNetFD.output.in_features, 2)
 replace_avgpool_with_adapt(MobileNetFD)
 MobileNetFD = FrozenBackboneMobileNet(MobileNetFD)
-
-m = ptcv_get_model('mobilenet_wd4', pretrained=False)  # MobileNetV1 not pretrained
-m.output = nn.Linear(m.output.in_features, 2)
-MobileNet_no_pt = replace_avgpool_with_adapt(m)
