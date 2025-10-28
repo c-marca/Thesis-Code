@@ -19,8 +19,9 @@ python -m pip install datasets
   - 20k imgs test split (938 MB)
   - 10k imgs val split  (469 MB)
 TOTAL: around 6 GB
-Dataset shards are under a datasets directory: 
-  Shards are already resized to 128 resolution  for memory occupation, download and training overhead considerations.
+Dataset shards are under a datasets directory:
+
+-Shards are already resized to 128 resolution  for memory occupation, download and training overhead considerations.
 
   
   <img src="/assets/wakevision_random.png" width="300" alt="Diagram">
