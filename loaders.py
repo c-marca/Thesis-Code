@@ -83,21 +83,37 @@ WakeVision_train = WVCacheDataset("./datasets/wv_train_cache_128")
 WakeVision_test = WVCacheDataset("./datasets/wv_test_cache_128")
 WakeVision_val = WVCacheDataset("./datasets/wv_val_cache_128") 
 
+N = len(WakeVision_val)
+minival_size = 2_000
+g = torch.Generator().manual_seed(42)
+perm = torch.randperm(N, generator=g)
+minival_idx = perm[:minival_size].tolist()
+
+
+WakeVision_mini_val = Subset(WakeVision_val, minival_idx)
+
+
 # LOADERS
 WV_train = DataLoader(WakeVision_train, batch_size=128, shuffle=True,
-                   num_workers=8, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=2,
+                   num_workers=12, pin_memory=pin_memory,
+                    persistent_workers=True, prefetch_factor=4,
                          collate_fn=collate_xy)
 
-WV_test = DataLoader(WakeVision_test, batch_size=128, shuffle=True,
-                    num_workers=8, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=2,
+WV_test = DataLoader(WakeVision_test, batch_size=128, shuffle=False,
+                    num_workers=12, pin_memory=pin_memory,
+                    persistent_workers=True, prefetch_factor=4,
                          collate_fn=collate_xy)
 
-WV_val = DataLoader(WakeVision_val, batch_size=128, shuffle=True,
-                    num_workers=8, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=2,
+WV_val = DataLoader(WakeVision_val, batch_size=128, shuffle=False,
+                    num_workers=12, pin_memory=pin_memory,
+                    persistent_workers=True, prefetch_factor=4,
                          collate_fn=collate_xy)
+                    
+WV_mini_val = DataLoader(WakeVision_mini_val, batch_size=128, shuffle=False,
+                    num_workers=12, pin_memory=pin_memory,
+                    persistent_workers=True, prefetch_factor=4,
+                         collate_fn=collate_xy)
+                    
 
 # These should be here
 
