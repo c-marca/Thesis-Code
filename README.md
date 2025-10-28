@@ -58,8 +58,11 @@ Pickled models are uploaded under a models directory:
   
 AVAILABLE MODELS:
 - MobileNetLP (setup for Linear Probe Transfer Learning)
-- MobileNet_no_pre (no pretraining)
+
 - MobileNetFD (setup for Linear Probe Transfer Learning)
+TO DO:
+- MobileNet_no_pre (no pretraining) for at least one of the above
+To show effectiveness of Transfer Learning  
 
 - MobileNet is imported from pytorchcv
 - MobileNetFD is imported from pytorchcv 
