@@ -5,7 +5,6 @@ Storage for the code for my EE Thesis.
 
   ```bash
 sudo apt install git-lfs
-python -m pip install timm
 python -m pip install pytorchcv
 python -m pip install onnx
 python -m pip install tqdm
@@ -65,7 +64,9 @@ AVAILABLE MODELS:
 
 - MobileNetFD (setup for Linear Probe Transfer Learning)
 - MobileNet_no_pre (no pretraining) for MobileNetV1
-- 
+- MobileNetFT (setup for Partial Finetuning i.e K DWS layers are unfrozen, K=2 , can can be explored).
+TO DO:
+- MobileNet_unfr (pretrained and unfrozen)
 To show effectiveness of Transfer Learning  
 
 - MobileNet is imported from pytorchcv
