@@ -107,10 +107,7 @@ Memory figures are taken from PULP-Trainlib's Deployer.
 # Papers
 - MobileNet: https://arxiv.org/abs/1704.04861
 - MobileNetFD: https://arxiv.org/abs/1802.03750
-- SqueezeNet:
 
-
-  
 # TO DO
 - Give full dependency list so that users can install them, include commands snippets
 - add results of experiments , plots, logs
