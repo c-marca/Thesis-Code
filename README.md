@@ -15,13 +15,11 @@ python -m pip install datasets
 # Datasets
 -Wake Vision
   - 100k imgs train quality split (4.58 GB)
-  - 20k imgs test split (938 MB)
   - 10k imgs val split  (469 MB)
 TOTAL: around 6 GB
 
 
-Full Wake Vision Splits are on local # TO BE UPLOADED
-Full splits:
+Full Wake Vision Splits:
 
 - c.a 18.5k val images: functional
 - c.a 55.7k test images: functional
