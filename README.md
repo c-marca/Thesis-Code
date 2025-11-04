@@ -19,6 +19,9 @@ python -m pip install datasets
   - 20k imgs test split (938 MB)
   - 10k imgs val split  (469 MB)
 TOTAL: around 6 GB
+
+Full Wake Vision Splits are on local # TO BE UPLOADED
+
 Dataset shards are under a datasets directory:
 
 -Shards are already resized to 128x128 resolution  for memory occupation, download and training overhead considerations.
@@ -61,20 +64,18 @@ AVAILABLE MODELS:
 - MobileNetLP (setup for Linear Probe Transfer Learning)
 
 - MobileNetFD (setup for Linear Probe Transfer Learning)
-TO DO:
-- MobileNet_no_pre (no pretraining) for at least one of the above
+- MobileNet_no_pre (no pretraining) for MobileNetV1
+- 
 To show effectiveness of Transfer Learning  
 
 - MobileNet is imported from pytorchcv
 - MobileNetFD is imported from pytorchcv 
-- SqueezeNet is imported from timm
 PRETRAINING LOGS ARE PROVIDED 
 # External
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
 
 Inside there are Custom Deployers for MobileNet and MobileNetFD.
-
 
  # Assets
  Images and .onnx and similar
