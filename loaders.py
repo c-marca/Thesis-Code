@@ -2,9 +2,15 @@ import os     # To create directories
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset
 from torchvision import transforms
-from datasets import load_dataset                           # To get Wake Vision Dataset from Hugging Face Datasets
 import glob                                                 # filename pattern-matching to select shards
-
+from collections import OrderedDict
+from typing import Dict, Optional, Tuple, List
+import bisect
+torch.multiprocessing.set_sharing_strategy('file_system')
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
+def _worker_init(_):
+    import torch, os
+    torch.set_num_threads(1)
 
 if torch.cuda.is_available():
     device = torch.device('cuda')
@@ -14,109 +20,150 @@ else:
     device = torch.device('cpu')
     pin_memory = False
 
-
-class WVCacheDataset(Dataset):
-    def __init__(self, cache_dir, cond=None, mode="AND"):
+class FastWVCacheDataset(Dataset):
+    def __init__(self, cache_dir, cond=None, mode="AND", imagenet_norm=True, max_shards_in_mem=1):
         self.files = sorted(glob.glob(os.path.join(cache_dir, "shard-*.pt")))
         assert self.files, f"no shards in {cache_dir}"
 
-        # probe first shard
+        self.imagenet_norm = imagenet_norm
+        self._mean = torch.as_tensor(IMNET_MEAN, dtype=torch.float32).view(-1,1,1)
+        self._std  = torch.as_tensor(IMNET_STD,  dtype=torch.float32).view(-1,1,1)
+
+        # small shard cache (per worker process)
+        self.max_shards_in_mem = int(max(1, max_shards_in_mem))
+        self._cache = OrderedDict()  # fi -> pack
+
+        # load once to probe metadata
         probe = torch.load(self.files[0], map_location="cpu")
         self.has_fg = ("fg" in probe) and ("fg_keys" in probe)
-        self.fg_keys = list(map(str, probe["fg_keys"])) if self.has_fg else []
+        self.fg_keys = list(map(str, probe.get("fg_keys", []))) if self.has_fg else []
         self.k2i = {k:i for i,k in enumerate(self.fg_keys)}
 
-        # build index; apply filter only if FG exists
-        self.idx = []
-        for fi,f in enumerate(self.files):
-            n = torch.load(f, map_location="cpu")["y"].shape[0]
-            if not cond or not self.has_fg:
-                self.idx += [(fi, j) for j in range(n)]
-            else:
-                pack = torch.load(f, map_location="cpu")
-                fg = pack["fg"].to(torch.uint8)      # [N,K]
-                pos = [self.k2i[k] for k,v in cond.items() if v==1]
-                neg = [self.k2i[k] for k,v in cond.items() if v==0]
-                ok = torch.ones(fg.shape[0], dtype=torch.bool)
-                if pos:
-                    sel = fg[:, pos] == 1
-                    ok &= (sel.all(1) if mode=="AND" else sel.any(1))
-                if neg:
-                    ok &= (fg[:, neg] == 0).all(1)
-                self.idx += [(fi, int(j)) for j in torch.nonzero(ok, as_tuple=True)[0].tolist()]
+        # precompute pos/neg indices once
+        pos_idx = [self.k2i[k] for k, v in (cond or {}).items() if v == 1] if self.has_fg else []
+        neg_idx = [self.k2i[k] for k, v in (cond or {}).items() if v == 0] if self.has_fg else []
 
-    def __len__(self): return len(self.idx)
+        # build global index with a single read per shard
+        self.idx = []
+        for fi, path in enumerate(self.files):
+            pack = torch.load(path, map_location="cpu")
+            N = pack["y"].shape[0]
+            if not cond or not self.has_fg:
+                self.idx += [(fi, j) for j in range(N)]
+            else:
+                fg = pack["fg"].to(torch.uint8)  # [N,K]
+                ok = torch.ones(N, dtype=torch.bool)
+                if pos_idx:
+                    sel = (fg[:, pos_idx] == 1)
+                    ok &= sel.all(1) if mode == "AND" else sel.any(1)
+                if neg_idx:
+                    ok &= (fg[:, neg_idx] == 0).all(1)
+                js = torch.nonzero(ok, as_tuple=True)[0].tolist()
+                self.idx += [(fi, int(j)) for j in js]
+            # keep memory low during init
+            del pack
+
+    def __len__(self):
+        return len(self.idx)
+
+    def _get_shard(self, fi):
+        # LRU fetch
+        hit = self._cache.get(fi, None)
+        if hit is not None:
+            self._cache.move_to_end(fi)
+            return hit
+        pack = torch.load(self.files[fi], map_location="cpu")
+        self._cache[fi] = pack
+        if len(self._cache) > self.max_shards_in_mem:
+            self._cache.popitem(last=False)  # evict LRU
+        return pack
 
     def __getitem__(self, i):
         fi, j = self.idx[i]
-        pack = torch.load(self.files[fi], map_location="cpu")
-        x = pack["x"][j].float() / 255.0
+        pack = self._get_shard(fi)
+
+        x = pack["x"][j]
+        if not isinstance(x, torch.Tensor):
+            x = torch.as_tensor(x)
+
+        # fast path if you stored CHW float32 in [0,1]
+        if x.dtype != torch.float32:
+            x = x.float()
+        # normalize from 0..255 only if needed
+        if x.max() > 1.0:
+            x = x / 255.0
+
+        # ensure CHW
+        if x.ndim == 3 and x.shape[-1] in (1,3):
+            x = x.permute(2,0,1).contiguous()
+        if x.ndim != 3 or x.shape[0] not in (1,3):
+            raise RuntimeError(f"unexpected image shape: {tuple(x.shape)}; expected CHW with C in (1,3)")
+
+        if self.imagenet_norm:
+            C = x.shape[0]
+            mean = self._mean[:C]
+            std  = self._std[:C]
+            x = (x - mean) / std
+
         y = torch.as_tensor(pack["y"][j], dtype=torch.long)
+
         if self.has_fg:
             fg = pack["fg"][j].to(torch.uint8)
-            fn = pack.get("fn", "")
+            fn_list = pack.get("fn", None)
+            fn = fn_list[j] if isinstance(fn_list, list) else ""
         else:
             fg = torch.zeros(0, dtype=torch.uint8)
             fn = ""
+
         return x, y, fg, fn
 
-# Custom Collate
 def collate_xy(batch):
-    xs, ys, fgs, fns = zip(*batch)              # each from __getitem__
-    return (torch.stack(xs),
-            torch.stack(ys),
-            torch.stack(fgs),                   # requires equal fg length
-            list(fns))
-
-# To balance the dataset
-'''
-flat_idx, labels = scan_labels(cache_dir)
-
-sel, counts, m = make_balanced_selection(labels, per_class_max=None)
-sampler = SubsetRandomSampler(sel)
-loader = DataLoader(dataset, batch_size=64, sampler=sampler,
-                    num_workers=4, pin_memory=True, drop_last=True)
-
-'''
-# DATASETS
-WakeVision_train = WVCacheDataset("./datasets/wv_train_cache_128") 
-WakeVision_test = WVCacheDataset("./datasets/wv_test_cache_128")
-WakeVision_val = WVCacheDataset("./datasets/wv_val_cache_128") 
-
-N = len(WakeVision_val)
-minival_size = 2_000
-g = torch.Generator().manual_seed(42)
-perm = torch.randperm(N, generator=g)
-minival_idx = perm[:minival_size].tolist()
+    xs, ys, fgs, fns = zip(*batch)
+    return torch.stack(xs, 0), torch.stack(ys, 0), torch.stack(fgs, 0), list(fns)
 
 
-WakeVision_mini_val = Subset(WakeVision_val, minival_idx)
+IMNET_MEAN = (0.485, 0.456, 0.406)
+IMNET_STD  = (0.229, 0.224, 0.225)
 
+# Usage
+WakeVision_train = FastWVCacheDataset("./datasets/wv_train_cache_128")
+WakeVision_val   = FastWVCacheDataset("./datasets/wv_val")
+WakeVision_test  = FastWVCacheDataset("./datasets/wv_test_ls")
 
 # LOADERS
-WV_train = DataLoader(WakeVision_train, batch_size=128, shuffle=True,
-                   num_workers=12, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=4,
-                         collate_fn=collate_xy)
 
-WV_test = DataLoader(WakeVision_test, batch_size=128, shuffle=False,
-                    num_workers=12, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=4,
-                         collate_fn=collate_xy)
+WV_train_ld = DataLoader(
+    WakeVision_train,
+    batch_size=32,
+    shuffle=True,
+    num_workers=8,
+    prefetch_factor=1,
+    pin_memory=True,                 # set False if RAM tight
+    persistent_workers=True,         # enable after stable
+    worker_init_fn=_worker_init,
+    collate_fn=collate_xy,
+    drop_last=True
+)
+WV_train_ld.name = "WakeVision_train_quality"
 
-WV_val = DataLoader(WakeVision_val, batch_size=128, shuffle=False,
-                    num_workers=12, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=4,
-                         collate_fn=collate_xy)
-                    
-WV_mini_val = DataLoader(WakeVision_mini_val, batch_size=128, shuffle=False,
-                    num_workers=12, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=4,
-                         collate_fn=collate_xy)
-                    
+
+WV_test_ld = DataLoader(WakeVision_test, batch_size=32, shuffle=False,
+                    num_workers=4, pin_memory=pin_memory,
+                    persistent_workers=True, prefetch_factor=1,worker_init_fn=_worker_init,
+                         collate_fn=collate_xy,drop_last=False)
+
+WV_test_ld.name = "WakeVision_test"
+
+WV_val_ld = DataLoader(WakeVision_val, batch_size=32, shuffle=False,
+                    num_workers=8, pin_memory=pin_memory,
+                    persistent_workers=True, prefetch_factor=2,worker_init_fn=_worker_init,
+                         collate_fn=collate_xy,drop_last=False)
+
+WV_val_ld.name = "WakeVision_val"
+
 
 # These should be here
-
+# These will be used in the future
 def scan_labels(cache_dir):
     files = sorted(glob.glob(os.path.join(cache_dir, "shard-*.pt")))
     assert files, f"no shards in {cache_dir}"
