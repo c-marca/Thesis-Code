@@ -126,9 +126,9 @@ IMNET_MEAN = (0.485, 0.456, 0.406)
 IMNET_STD  = (0.229, 0.224, 0.225)
 
 # Usage
-WakeVision_train = FastWVCacheDataset("./datasets/wv_train_cache_128")
+WakeVision_train = FastWVCacheDataset("./datasets/wv_train")
 WakeVision_val   = FastWVCacheDataset("./datasets/wv_val")
-WakeVision_test  = FastWVCacheDataset("./datasets/wv_test_ls")
+WakeVision_test  = FastWVCacheDataset("./datasets/wv_test")
 
 # LOADERS
 
