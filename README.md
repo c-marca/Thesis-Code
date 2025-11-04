@@ -111,6 +111,6 @@ Memory figures are taken from PULP-Trainlib's Deployer.
 # TO DO
 - Give full dependency list so that users can install them, include commands snippets
 - add results of experiments , plots, logs
-- add finetuner.py
 - add Thesis stub
 - use TrainLib tests to profile performance of NNs
+- Add hyperparam.csv and train_log.csv
