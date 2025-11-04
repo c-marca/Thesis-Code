@@ -227,7 +227,10 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     
     val_loss_list = []
     val_acc_list = []
-
+    print("Initial Validation")
+    val_loss,val_acc = validate(net, loaders.WV_val_ld)
+    val_loss_list.append(val_loss)
+    val_acc_list.append(val_acc)
     for epoch in range(epochs):
         net.train()
         optimizer.zero_grad(set_to_none=True)
@@ -269,19 +272,19 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
 
         print(f"Saving checkpoint for epoch {epoch}")
         torch.save(net.state_dict(), f"{models_dir}{net._get_name()}_epoch_{epoch}.pth")
-        val_loss,val_acc = validate(net, loaders.WV_val)
+        val_loss,val_acc = validate(net, loaders.WV_val_ld)
         val_loss_list.append(val_loss)
         val_acc_list.append(val_acc)
 
     end_time = time.time()
     print(f"Total training time: {(end_time - start_time)/60:.2f} minutes")
     torch.save(net.state_dict(), f"{models_dir}{net._get_name()}_final.pth")
-
+    print("Saving plots")
     if val_acc_list:                       # not empty
         plt.figure()
-        plt.plot(range(len(train_loss_list)), train_loss_list)
+        plt.plot(range(len(val_acc_list)), val_acc_list)
         plt.xlabel("Epoch")
-        plt.ylabel("Validation accuracy")
+        plt.ylabel("Validation Accuracy")
         plt.tight_layout()
         plt.savefig(plots_dir+"val_accuracy.png")         # prefer savefig in headless runs
         plt.close()
@@ -290,11 +293,11 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     
     if val_loss_list:                       # not empty
         plt.figure()
-        plt.plot(range(len(train_loss_list)), train_loss_list)
+        plt.plot(range(len(val_loss_list)), val_loss_list)
         plt.xlabel("Epoch")
-        plt.ylabel("Validation Accuracy")
+        plt.ylabel("Validation Loss")
         plt.tight_layout()
-        plt.savefig(plots_dir+"val_accuracy.png")         # prefer savefig in headless runs
+        plt.savefig(plots_dir+"val_loss.png")         # prefer savefig in headless runs
         plt.close()
     else:
         print("val_acc_list is empty; nothing to plot.")
@@ -311,9 +314,6 @@ def LoadModel(net ,model_path):
 
 print("Initial Test")
 test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
-print("Initial Validation")
-validate(net = models.MobileNetFT, val_loader = loaders.WV_val_ld)
-print("Beginning training on Wake Vision (WV)")
 
 train(net=models.MobileNetFT,train_loader=loaders.WV_test_ld,epochs=5,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
 
