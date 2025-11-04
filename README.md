@@ -23,9 +23,9 @@ TOTAL: around 6 GB
 Full Wake Vision Splits are on local # TO BE UPLOADED
 Full splits:
 
-- c.a 18.5k val images
-- c.a 55.7k test images
-- c.a 1.2M train images 
+- c.a 18.5k val images: functional
+- c.a 55.7k test images: functional
+- c.a 1.2M train images: TBD 
 
 Dataset shards are under a datasets directory:
 
