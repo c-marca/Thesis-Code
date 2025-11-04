@@ -19,7 +19,13 @@ python -m pip install datasets
   - 10k imgs val split  (469 MB)
 TOTAL: around 6 GB
 
+
 Full Wake Vision Splits are on local # TO BE UPLOADED
+Full splits:
+
+- c.a 18.5k val images
+- c.a 55.7k test images
+- c.a 1.2M train images 
 
 Dataset shards are under a datasets directory:
 
@@ -53,7 +59,7 @@ SHARD = 4096
 Dataset composition by class and finegrained can be seen in respective (split)_balance.txt
 
 # Models
-models.py makes them available
+ The models.py module makes them available.
 
 Pickled models are uploaded under a models directory:
 
@@ -71,7 +77,21 @@ To show effectiveness of Transfer Learning
 
 - MobileNet is imported from pytorchcv
 - MobileNetFD is imported from pytorchcv 
-PRETRAINING LOGS ARE PROVIDED 
+PRETRAINING LOGS ARE PROVIDED
+
+# Finetuner
+
+The finetuner script provides validation, test and training functions.
+- It provides CLI logging of hyperparameters, these will be soon turned to .csv logs as well.
+- It provides plotting of validation per epoch.
+
+# Loaders
+
+The loaders module provides dataloaders for each dataset split.
+
+These loaders are tuned in such a way as to have high performance on a personal  GPU RTX2080.
+
+
 # External
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
