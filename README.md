@@ -19,13 +19,13 @@ python -m pip install datasets
 
 **Full Wake Vision Splits:**
 
-- c.a 18.5k val images:
+- c.a 18.5k val images (883 MB):
   - functional
   - uploaded
-- c.a 55.7k test images:
+- c.a 55.7k test images(2.6 GB):
    - functional
    - uploaded
-- c.a 1.2M train images:
+- c.a 1.2M train images(55 GB):
   - functional
 
 Dataset shards are under a datasets directory:
