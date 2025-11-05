@@ -7,21 +7,15 @@ import os     # To create directories
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-import math
-from math import floor                                      # For memory occupation considerations
-from torch.utils.data import DataLoader, Dataset, Subset
-from torchvision import transforms	
-import matplotlib
 import matplotlib.pyplot as plt
 import time                                                 
 import argparse                                                                               
 from tqdm.auto import tqdm                                  # for progress bar and CLI  messages for dataset generation
-import torchvision.utils as vutils
 import csv                                                    # for training logs
-import itertools
 import models 
 import loaders
+
+# Use write dict method for csv logs
 
 # Insert results folder here AND dataset folders
 
@@ -194,12 +188,22 @@ IMNET_MEAN = (0.485, 0.456, 0.406)
 IMNET_STD  = (0.229, 0.224, 0.225)
 
 def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
+
+
+
+    print("Initial Validation")
+    val_loss,val_acc = validate(net, loaders.WV_val_ld)
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    mean = torch.as_tensor(IMNET_MEAN, dtype=torch.float32, device=device).view(1, 3, 1, 1)
+    std = torch.as_tensor(IMNET_STD, dtype=torch.float32, device=device).view(1, 3, 1, 1)
+
     # FP32 speed knobs
+    torch.backends.cuda.matmul.fp32_precision = "high"      
+    torch.backends.cudnn.conv.fp32_precision = "tf32"       
     torch.backends.cudnn.benchmark = True
-    torch.backends.cuda.matmul.allow_tf32 = True
-    torch.backends.cudnn.allow_tf32 = True
+
 
     net.to(device)
     net.train()
@@ -214,21 +218,21 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     # build optimizer from the actual trainable params
     pg = [p for p in net.parameters() if p.requires_grad]
     
-    optimizer = torch.optim.SGD(
+    optimizer = optim.SGD(
         pg, lr=learning_rate, momentum=momentum, weight_decay=weight_decay
     )
     loss_fn = nn.CrossEntropyLoss(ignore_index=255)
 
-    grad_accum = 4  # keep support; 1 means no accumulation
+    grad_accum = 8  # keep support; 1 means no accumulation
     log_every_steps = 50 * max(1, grad_accum)
-    bs = getattr(train_loader, "batch_size", None)
+    bs = getattr(loaders.sampler, "batch_size", None)
+
     print(f"Training {net.name} on {train_loader.name} dataset, for Epochs: {epochs}, with  bs={bs}, eff_bs={None if bs is None else bs*grad_accum}, "
           f"imgs={None if bs is None else bs*len(train_loader)}, res = 128x128x3 lr={learning_rate}, mom={momentum}, wd={weight_decay}")
     
     val_loss_list = []
     val_acc_list = []
-    print("Initial Validation")
-    val_loss,val_acc = validate(net, loaders.WV_val_ld)
+
     val_loss_list.append(val_loss)
     val_acc_list.append(val_acc)
     for epoch in range(epochs):
@@ -245,7 +249,10 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
             imgs   = imgs.to(device, non_blocking=True).to(memory_format=torch.channels_last)
             labels = labels.to(device, non_blocking=True).long()
 
-            out = net(imgs)
+            # FP32 normalization and forward 
+            x = (imgs - mean) / std
+
+            out = net(x)
             loss = loss_fn(out, labels) / grad_accum                        # logits expected; no softmax
             loss.backward()
 
@@ -312,13 +319,22 @@ def LoadModel(net ,model_path):
 
     return net
 
+'''
+def hyperparameter_explorator(net,epochs,lr_list):
+
+    train(net=models.MobileNetFT,train_loader=loaders.WV_train_ld,epochs=1,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
+'''
+
+
+
+'''
 print("Initial Test")
 test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
-
-train(net=models.MobileNetFT,train_loader=loaders.WV_test_ld,epochs=5,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
+'''
+train(net=models.MobileNet_no_pre,train_loader=loaders.WV_train_ld,epochs=2,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
 
 print("Final Validation")
-validate(net = models.MobileNetFT, val_loader = loaders.WV_val_ld)
+validate(net = models.MobileNet_no_pre, val_loader = loaders.WV_val_ld)
 print("Final Test")
-test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
+test(net = models.MobileNet_no_pre, test_loader = loaders.WV_test_ld)
 
