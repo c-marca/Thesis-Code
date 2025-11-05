@@ -121,10 +121,10 @@ This section will detail the training process:
 - Accuracy & Loss charts
 
 Table with model accuracy and memory occupation, comparison with the state of the art:
-| Models     | Memory     | Test Accuracy |
-|------------|------------|---------------|
-| MobileNet   | 2 MB      | x             |          |
-|MobileNetFD  | 2.1 MB    | x             |
+| Models      | Memory     | Test Accuracy |
+|-------------|------------|---------------|
+| MobileNet   | 2 MB       | x             |          |
+|MobileNetFD  | 2.1 MB     | x             |
 
 Memory figures are taken from PULP-Trainlib's Deployer.
 
