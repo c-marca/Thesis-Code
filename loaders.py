@@ -4,8 +4,10 @@ from torch.utils.data import DataLoader, Dataset, Subset
 from torchvision import transforms
 import glob                                                 # filename pattern-matching to select shards
 from collections import OrderedDict
-from typing import Dict, Optional, Tuple, List
-import bisect
+import math, random
+from torch.utils.data import Sampler, BatchSampler
+from collections import defaultdict
+
 torch.multiprocessing.set_sharing_strategy('file_system')
 os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 def _worker_init(_):
@@ -21,7 +23,9 @@ else:
     pin_memory = False
 
 class FastWVCacheDataset(Dataset):
-    def __init__(self, cache_dir, cond=None, mode="AND", imagenet_norm=True, max_shards_in_mem=1):
+    def __init__(self, cache_dir, cond=None, mode="AND", imagenet_norm=True, max_shards_in_mem=2,name = "Wake Vision"):
+        self.name = name
+        print(f"Initializing Dataset {self.name}")
         self.files = sorted(glob.glob(os.path.join(cache_dir, "shard-*.pt")))
         assert self.files, f"no shards in {cache_dir}"
 
@@ -121,42 +125,222 @@ def collate_xy(batch):
     xs, ys, fgs, fns = zip(*batch)
     return torch.stack(xs, 0), torch.stack(ys, 0), torch.stack(fgs, 0), list(fns)
 
+class FastWVCacheDatasetV2(Dataset):
+    """
+    Expects shards like your builder:
+      x: uint8 [N,C,H,W]  (C in {1,3})
+      y: uint8 [N]
+      fg: uint8 [N,K]     (optional)
+      fn: list[str]       (optional)
+      fg_keys: list[str]  (optional)
+    No normalization here. Do it on GPU.
+    """
+    def __init__(self, cache_dir, cond=None, mode="AND", max_shards_in_mem=2, name="Wake Vision"):
+        self.name = name
+        print(f"Initializing Dataset {self.name}")
+        self.files = sorted(glob.glob(os.path.join(cache_dir, "shard-*.pt")))
+        assert self.files, f"no shards in {cache_dir}"
+
+        self.max_shards_in_mem = max(1, int(max_shards_in_mem))
+        self._cache = OrderedDict()
+
+        probe = torch.load(self.files[0], map_location="cpu")
+        self.has_fg = ("fg" in probe) and ("fg_keys" in probe)
+        self.fg_keys = list(map(str, probe.get("fg_keys", []))) if self.has_fg else []
+        self.k2i = {k:i for i,k in enumerate(self.fg_keys)}
+        del probe
+
+        self.idx = []
+        if cond and self.has_fg:
+            pos_idx = [self.k2i[k] for k,v in cond.items() if v == 1]
+            neg_idx = [self.k2i[k] for k,v in cond.items() if v == 0]
+            for fi, path in enumerate(self.files):
+                pack = torch.load(path, map_location="cpu")
+                N = int(pack["y"].shape[0])
+                fg = pack["fg"].to(torch.uint8)
+                ok = torch.ones(N, dtype=torch.bool)
+                if pos_idx:
+                    sel = (fg[:, pos_idx] == 1)
+                    ok &= sel.all(1) if mode == "AND" else sel.any(1)
+                if neg_idx:
+                    ok &= (fg[:, neg_idx] == 0).all(1)
+                js = torch.nonzero(ok, as_tuple=True)[0].tolist()
+                self.idx += [(fi, int(j)) for j in js]
+                del pack
+        else:
+            for fi, path in enumerate(self.files):
+                pack = torch.load(path, map_location="cpu")
+                N = int(pack["y"].shape[0])
+                self.idx += [(fi, j) for j in range(N)]
+                del pack
+
+    def __len__(self): return len(self.idx)
+
+    def _get_shard(self, fi):
+        hit = self._cache.get(fi)
+        if hit is not None:
+            self._cache.move_to_end(fi)
+            return hit
+        pack = torch.load(self.files[fi], map_location="cpu")
+        x, y = pack["x"], pack["y"]
+        assert isinstance(x, torch.Tensor) and x.dtype == torch.uint8 and x.ndim == 4, "x must be uint8 [N,C,H,W]"
+        assert x.shape[1] in (1,3), "C must be 1 or 3"
+        y = torch.as_tensor(y)
+        assert y.dtype == torch.uint8 and y.ndim == 1 and y.shape[0] == x.shape[0], "y must be uint8 [N]"
+        if "fg" in pack:
+            fg = pack["fg"]
+            assert isinstance(fg, torch.Tensor) and fg.dtype == torch.uint8 and fg.shape[0] == x.shape[0], "fg must be uint8 [N,K]"
+        self._cache[fi] = pack
+        if len(self._cache) > self.max_shards_in_mem:
+            self._cache.popitem(last=False)
+        return pack
+
+    def __getitem__(self, i):
+        fi, j = self.idx[i]
+        p = self._get_shard(fi)
+        x_u8 = p["x"][j]                        # [C,H,W] uint8
+        y_u8 = p["y"][j]                        # scalar uint8
+        if self.has_fg:
+            fg = p["fg"][j]
+            fn_list = p.get("fn", None)
+            fn = fn_list[j] if isinstance(fn_list, list) else ""
+        else:
+            fg = torch.zeros(0, dtype=torch.uint8); fn = ""
+        return x_u8, y_u8, fg, fn
+
+def collate_xy_v2(batch):
+    xs_u8, ys_u8, fgs, fns = zip(*batch)
+    fg_out = torch.stack(fgs, 0) if fgs[0].numel() else torch.empty(len(fgs), 0, dtype=torch.uint8)
+    return torch.stack(xs_u8, 0), torch.stack(ys_u8, 0), fg_out, list(fns)
+
+class ShardGroupedBatchSampler(BatchSampler):
+    """
+    Group indices by shard id (fi) and yield shard-local batches.
+    Assumes dataset exposes: dataset.idx[i] -> (fi, j)
+    Use with DataLoader(batch_sampler=...); do not also set batch_size/shuffle.
+    """
+
+    def __init__(self, dataset, batch_size, drop_last=True,
+                 shuffle_shards=True, max_shards_per_batch=1):
+        assert hasattr(dataset, "idx"), "dataset must have .idx mapping to (fi, j)"
+        self.dataset = dataset
+        self.batch_size = int(batch_size)
+        self.drop_last = bool(drop_last)
+        self.shuffle_shards = bool(shuffle_shards)
+        self.max_shards_per_batch = max(1, int(max_shards_per_batch))
+
+        # Build bins: shard_id -> list[dataset_index]
+        bins = defaultdict(list)
+        for i, (fi, _) in enumerate(dataset.idx):
+            bins[int(fi)].append(i)
+        self._bins = dict(bins)  # {fi: [i0,i1,...]}
+
+        # DDP support
+        if torch.distributed.is_available() and torch.distributed.is_initialized():
+            self.world_size = torch.distributed.get_world_size()
+            self.rank = torch.distributed.get_rank()
+        else:
+            self.world_size = 1
+            self.rank = 0
+
+    def __iter__(self):
+        # Order shards
+        shard_ids = list(self._bins.keys())
+        if self.shuffle_shards:
+            random.shuffle(shard_ids)
+
+        # Prepare per-shard index lists
+        per_shard_lists = []
+        for fi in shard_ids:
+            idxs = self._bins[fi][:]       # copy
+            random.shuffle(idxs)
+            per_shard_lists.append((fi, idxs))
+
+        # Emit batches
+        batch = []
+        shards_in_batch = set()
+        for fi, idxs in per_shard_lists:
+            # Slice to this rank in DDP: simple striding
+            if self.world_size > 1:
+                idxs = idxs[self.rank::self.world_size]
+            # Walk this shard in contiguous chunks
+            for i in range(0, len(idxs), 1):
+                # Respect max_shards_per_batch
+                if len(shards_in_batch) == self.max_shards_per_batch and fi not in shards_in_batch:
+                    # flush current batch if it's non-empty
+                    if len(batch) >= (self.batch_size if self.drop_last else 1):
+                        # yield full batches from accumulated indices
+                        for b0 in range(0, len(batch) - (len(batch) % self.batch_size if self.drop_last else 0), self.batch_size):
+                            yield batch[b0:b0 + self.batch_size]
+                        batch = batch[(len(batch) // self.batch_size)*self.batch_size:]
+                    shards_in_batch.clear()
+
+                batch.append(idxs[i])
+                shards_in_batch.add(fi)
+
+                if len(batch) == self.batch_size:
+                    yield batch
+                    batch = []
+                    # keep shards_in_batch if more from same shard may follow
+                    if self.max_shards_per_batch == 1:
+                        shards_in_batch.clear()
+
+        # Tail
+        if not self.drop_last and batch:
+            yield batch
+
+    def __len__(self):
+        # Conservative length: total usable samples // batch_size (per-rank)
+        n = 0
+        if self.world_size == 1:
+            for idxs in self._bins.values():
+                n += len(idxs)
+        else:
+            for idxs in self._bins.values():
+                n += math.ceil(len(idxs) / self.world_size)
+        return n // self.batch_size if self.drop_last else math.ceil(n / self.batch_size)
+
+
 
 IMNET_MEAN = (0.485, 0.456, 0.406)
 IMNET_STD  = (0.229, 0.224, 0.225)
 
 # Usage
-WakeVision_train = FastWVCacheDataset("./datasets/wv_train")
-WakeVision_val   = FastWVCacheDataset("./datasets/wv_val")
-WakeVision_test  = FastWVCacheDataset("./datasets/wv_test")
+WakeVision_train = FastWVCacheDatasetV2("./datasets/wv_train",name = "WakeVision_train_quality")
+WakeVision_val   = FastWVCacheDataset("./datasets/wv_val",name = "WakeVision_val" )
+WakeVision_test  = FastWVCacheDataset("./datasets/wv_test",name = "WakeVision_test" )
+
+# Sampler
+
+sampler = ShardGroupedBatchSampler(WakeVision_train, batch_size=16, drop_last=True,
+                                   shuffle_shards=True, max_shards_per_batch=1)
+
 
 # LOADERS
 
 WV_train_ld = DataLoader(
     WakeVision_train,
-    batch_size=32,
-    shuffle=True,
-    num_workers=8,
+    batch_sampler=sampler,
+    num_workers=1,
     prefetch_factor=1,
     pin_memory=True,                 # set False if RAM tight
     persistent_workers=True,         # enable after stable
     worker_init_fn=_worker_init,
-    collate_fn=collate_xy,
-    drop_last=True
+    collate_fn=collate_xy_v2,
 )
 WV_train_ld.name = "WakeVision_train_quality"
 
 
-WV_test_ld = DataLoader(WakeVision_test, batch_size=32, shuffle=False,
+WV_test_ld = DataLoader(WakeVision_test, batch_size=16, shuffle=False,
                     num_workers=4, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=1,worker_init_fn=_worker_init,
+                    persistent_workers=False, prefetch_factor=1,worker_init_fn=_worker_init,
                          collate_fn=collate_xy,drop_last=False)
 
 WV_test_ld.name = "WakeVision_test"
 
-WV_val_ld = DataLoader(WakeVision_val, batch_size=32, shuffle=False,
-                    num_workers=8, pin_memory=pin_memory,
-                    persistent_workers=True, prefetch_factor=2,worker_init_fn=_worker_init,
+WV_val_ld = DataLoader(WakeVision_val, batch_size=16, shuffle=False,
+                    num_workers=4, pin_memory=pin_memory,
+                    persistent_workers=False, prefetch_factor=1,worker_init_fn=_worker_init,
                          collate_fn=collate_xy,drop_last=False)
 
 WV_val_ld.name = "WakeVision_val"
@@ -164,6 +348,7 @@ WV_val_ld.name = "WakeVision_val"
 
 # These should be here
 # These will be used in the future
+'''
 def scan_labels(cache_dir):
     files = sorted(glob.glob(os.path.join(cache_dir, "shard-*.pt")))
     assert files, f"no shards in {cache_dir}"
@@ -228,3 +413,4 @@ def count_from_shards(folder: str):
 
 
 #count_from_shards("./datasets/wv_test_cache_128")
+'''
