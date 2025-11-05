@@ -17,7 +17,7 @@ python -m pip install datasets
   - 100k imgs train quality split (4.58 GB)
 
 
-Full Wake Vision Splits:
+**Full Wake Vision Splits:**
 
 - c.a 18.5k val images:
   - functional
@@ -30,7 +30,7 @@ Full Wake Vision Splits:
 
 Dataset shards are under a datasets directory:
 
--Shards are already resized to 128x128 resolution  for memory occupation, download and training overhead considerations.
+-Shards are already resized to **128x128 resolution**  for memory occupation, download and training overhead considerations.
 
   
   <img src="/assets/wakevision_random.png" width="300" alt="Diagram">
@@ -40,7 +40,7 @@ TO PULL SHARDS:
 git lfs pull
   ```
   Shards have been generated 
-  - dataset_generator.py to generate Wake Vision Dataset like the user wants
+  - **dataset_generator.py** to generate Wake Vision Dataset like the user wants
   - User can modify dataset_generator.py to change resolution, image size, split, shard size.
     - can be improved by adding argparse arguments to script
 
@@ -60,35 +60,37 @@ SHARD = 4096
 Dataset composition by class and finegrained can be seen in respective (split)_balance.txt
 
 # Models
- The models.py module makes them available.
-
-Pickled models are uploaded under a models directory:
+ The **models.py** module makes them available.
 
   Pickled models can be used as training checkpoints.
   
 AVAILABLE MODELS:
-- MobileNetLP (setup for Linear Probe Transfer Learning)
+- **MobileNetLP** (setup for Linear Probe Transfer Learning)
 
-- MobileNetFD (setup for Linear Probe Transfer Learning)
-- MobileNet_no_pre (no pretraining) for MobileNetV1
-- MobileNetFT (setup for Partial Finetuning i.e K DWS layers are unfrozen, K=2 , can can be explored).
+- **MobileNetFD** (setup for Linear Probe Transfer Learning)
+- **MobileNet_no_pre** (no pretraining) for MobileNetV1
+- **MobileNetFT** (setup for Partial Finetuning i.e K DWS layers are unfrozen, K=2 , can can be explored).
 TO DO:
 - MobileNet_unfr (pretrained and unfrozen)
 To show effectiveness of Transfer Learning  
 
-- MobileNet is imported from pytorchcv
-- MobileNetFD is imported from pytorchcv 
+- MobileNet is imported from **pytorchcv**
+- MobileNetFD is imported from **pytorchcv** 
 PRETRAINING LOGS ARE PROVIDED
 
 # Finetuner
 
 The finetuner script provides validation, test and training functions.
+
+- It creates a __/training__ directory where results are stored under __/training/project_name__/ .
+- Under the project directory it creates __/saved_models__ and __/plots__ .
 - It provides CLI logging of hyperparameters, these will be soon turned to .csv logs as well.
 - It provides plotting of validation per epoch.
+- It provides a **LoadModel()** method, so that one can use training checkpoints as a starting point.
 
 # Loaders
 
-The loaders module provides dataloaders for each dataset split.
+The **loaders.py** module provides dataloaders for each dataset split.
 
 These loaders are tuned in such a way as to have high performance on a personal  GPU RTX2080.
 
@@ -97,7 +99,7 @@ These loaders are tuned in such a way as to have high performance on a personal 
 Imported [PULP-TrainLib](https://github.com/pulp/-platform/pulp-trainlib) main branch
 as a subtree.
 
-Inside there are Custom Deployers for MobileNet and MobileNetFD.
+Inside there are **Custom Deployers** for MobileNet and MobileNetFD.
 
  # Assets
  Images and .onnx and similar
