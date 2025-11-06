@@ -1,3 +1,9 @@
+''' 
+    Author: Carlo Marcantonio
+    mail: carlo.marcantonio3@studio.unibo.it
+	  
+'''
+
 import os     # To create directories 
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset
@@ -127,7 +133,7 @@ def collate_xy(batch):
 
 class FastWVCacheDatasetV2(Dataset):
     """
-    Expects shards like your builder:
+    Expects shards like they were built:
       x: uint8 [N,C,H,W]  (C in {1,3})
       y: uint8 [N]
       fg: uint8 [N,K]     (optional)
@@ -135,7 +141,7 @@ class FastWVCacheDatasetV2(Dataset):
       fg_keys: list[str]  (optional)
     No normalization here. Do it on GPU.
     """
-    def __init__(self, cache_dir, cond=None, mode="AND", max_shards_in_mem=2, name="Wake Vision"):
+    def __init__(self, cache_dir, cond=None, mode="AND", max_shards_in_mem=4, name="Wake Vision"):
         self.name = name
         print(f"Initializing Dataset {self.name}")
         self.files = sorted(glob.glob(os.path.join(cache_dir, "shard-*.pt")))
@@ -312,7 +318,7 @@ WakeVision_test  = FastWVCacheDataset("./datasets/wv_test",name = "WakeVision_te
 
 # Sampler
 
-sampler = ShardGroupedBatchSampler(WakeVision_train, batch_size=16, drop_last=True,
+sampler = ShardGroupedBatchSampler(WakeVision_train, batch_size=512, drop_last=True,
                                    shuffle_shards=True, max_shards_per_batch=1)
 
 
@@ -322,7 +328,7 @@ WV_train_ld = DataLoader(
     WakeVision_train,
     batch_sampler=sampler,
     num_workers=1,
-    prefetch_factor=1,
+    prefetch_factor=2,
     pin_memory=True,                 # set False if RAM tight
     persistent_workers=True,         # enable after stable
     worker_init_fn=_worker_init,
@@ -331,14 +337,14 @@ WV_train_ld = DataLoader(
 WV_train_ld.name = "WakeVision_train_quality"
 
 
-WV_test_ld = DataLoader(WakeVision_test, batch_size=16, shuffle=False,
-                    num_workers=4, pin_memory=pin_memory,
+WV_test_ld = DataLoader(WakeVision_test, batch_size=24, shuffle=False,
+                    num_workers=2, pin_memory=pin_memory,
                     persistent_workers=False, prefetch_factor=1,worker_init_fn=_worker_init,
                          collate_fn=collate_xy,drop_last=False)
 
 WV_test_ld.name = "WakeVision_test"
 
-WV_val_ld = DataLoader(WakeVision_val, batch_size=16, shuffle=False,
+WV_val_ld = DataLoader(WakeVision_val, batch_size=32, shuffle=False,
                     num_workers=4, pin_memory=pin_memory,
                     persistent_workers=False, prefetch_factor=1,worker_init_fn=_worker_init,
                          collate_fn=collate_xy,drop_last=False)
