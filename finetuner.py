@@ -15,20 +15,6 @@ import csv                                                    # for training log
 import models 
 import loaders
 
-# Use write dict method for csv logs
-
-# Insert results folder here AND dataset folders
-
-project_name = './training/Results'
-project_dir = './' + project_name
-plots_dir = project_dir + '/plots/'
-models_dir = project_name + '/saved_models/'
-
-
-
-os.makedirs(project_dir, exist_ok=True)
-os.makedirs(plots_dir, exist_ok=True)
-os.makedirs(models_dir, exist_ok=True)
 
 # Create parser
 
@@ -46,10 +32,11 @@ parser.add_argument(
     help="Input the path of the model you want to load"
 )
 parser.add_argument(
-     "--save-model",
+     "--dir-name",
     type=str,                    
     metavar="PATH",
-    help="Input the path of the model you want to save"
+    default = "Results",
+    help="Input the name of the project directory"
 )
 
 parser.add_argument(
@@ -63,7 +50,18 @@ parser.add_argument(
 args = parser.parse_args()
 
 load_path = args.load_model      # e.g., "models/m.pt" or None
-save_path = args.save_model      # e.g., "out/m.pt" or None
+dir_name = args.dir_name      # e.g., "out/m.pt" or None
+
+# Insert results folder here AND dataset folders
+
+project_name = './training/Results'
+project_dir = './' + project_name
+plots_dir = project_dir + '/plots/'
+models_dir = project_name + '/checkpoints/'
+
+os.makedirs(project_dir, exist_ok=True)
+os.makedirs(plots_dir, exist_ok=True)
+os.makedirs(models_dir, exist_ok=True)
 
 # Choose device
 if torch.cuda.is_available():
@@ -85,6 +83,23 @@ FG_KEYS = [
   "body_part"
 ]
 COL2IDX = {k: i for i, k in enumerate(FG_KEYS)}
+
+class CSVLogger:
+    def __init__(self, path, fieldnames):
+        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+        self.f = open(path, "a", newline="")
+        self.writer = csv.DictWriter(self.f, fieldnames=fieldnames)
+        self._wrote_header = os.path.getsize(path) > 0
+        if not self._wrote_header:
+            self.writer.writeheader()
+            self.f.flush()
+
+    def log(self, **row):
+        self.writer.writerow(row)
+        self.f.flush()  # durable enough for most runs
+
+    def close(self):
+        self.f.close()
 
 
 def test(net,test_loader):
@@ -187,6 +202,8 @@ def validate(net, val_loader ):
 IMNET_MEAN = (0.485, 0.456, 0.406)
 IMNET_STD  = (0.229, 0.224, 0.225)
 
+
+
 def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
 
 
@@ -223,8 +240,8 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     )
     loss_fn = nn.CrossEntropyLoss(ignore_index=255)
 
-    grad_accum = 8  # keep support; 1 means no accumulation
-    log_every_steps = 50 * max(1, grad_accum)
+    grad_accum = 1  
+    log_every_steps = 100 * max(1, grad_accum)
     bs = getattr(loaders.sampler, "batch_size", None)
 
     print(f"Training {net.name} on {train_loader.name} dataset, for Epochs: {epochs}, with  bs={bs}, eff_bs={None if bs is None else bs*grad_accum}, "
@@ -235,14 +252,20 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
 
     val_loss_list.append(val_loss)
     val_acc_list.append(val_acc)
+
+    fields = [
+        "split", "epoch", "step", "seen",
+        "lr","train_loss", "val_loss", "val_acc"
+    ]
+
+    logger = CSVLogger(path = project_dir + "/logs", fieldnames = fields)
     for epoch in range(epochs):
         net.train()
         optimizer.zero_grad(set_to_none=True)
         t_last = time.perf_counter()
         step = -1
         for step, (imgs, labels, *_) in enumerate(train_loader):
-            # Do NOT re-normalize; dataset already outputs normalized float tensors.
-            # Only handle the rare case of uint8 caches.
+
             if imgs.dtype == torch.uint8:
                 imgs = imgs.float().mul_(1.0/255.0)
 
@@ -253,7 +276,7 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
             x = (imgs - mean) / std
 
             out = net(x)
-            loss = loss_fn(out, labels) / grad_accum                        # logits expected; no softmax
+            loss = loss_fn(out, labels) #/ grad_accum                        # logits expected; no softmax
             loss.backward()
 
             if (step + 1) % grad_accum == 0:
@@ -264,10 +287,23 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
                 if device == "cuda":
                     torch.cuda.synchronize()
                 delta = time.perf_counter() - t_last
+
+
+
                 if bs is not None:
                     ips = (bs * log_every_steps) / max(delta, 1e-9)
-                    print(f"epoch {epoch} step {step+1} eff_bs={bs*grad_accum} "
+                    print(f"epoch {epoch} step {step+1} image = {bs*step} "
                           f"loss={float(loss.detach()*grad_accum):.4f} imgs/s={ips:.0f}")
+                    logger.log(
+                                    split="train",
+                                    epoch=epoch,
+                                    step=step,
+                                    seen= bs*step,
+                                    lr=learning_rate,
+                                    train_loss=float(loss.item()),
+                                    val_loss = val_loss,
+                                    val_acc=val_acc,
+                            )
                 else:
                     print(f"epoch {epoch} step {step+1} loss={float(loss.detach()*grad_accum):.4f}")
                 t_last = time.perf_counter()
@@ -321,20 +357,18 @@ def LoadModel(net ,model_path):
 
 '''
 def hyperparameter_explorator(net,epochs,lr_list):
-
-    train(net=models.MobileNetFT,train_loader=loaders.WV_train_ld,epochs=1,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
+    for lr in lr_list: ...
+        train(net=models.MobileNetFT,train_loader=loaders.WV_train_ld,epochs=1,learning_rate=lr,momentum = 0.9, weight_decay = 1e-4 )
 '''
 
 
-
-'''
 print("Initial Test")
 test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
-'''
-train(net=models.MobileNet_no_pre,train_loader=loaders.WV_train_ld,epochs=2,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
+
+train(net=models.MobileNetFT,train_loader=loaders.WV_train_ld,epochs=1,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
 
 print("Final Validation")
-validate(net = models.MobileNet_no_pre, val_loader = loaders.WV_val_ld)
+validate(net = models.MobileNetFT, val_loader = loaders.WV_val_ld)
 print("Final Test")
-test(net = models.MobileNet_no_pre, test_loader = loaders.WV_test_ld)
+test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
 
