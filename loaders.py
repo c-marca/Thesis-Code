@@ -337,15 +337,15 @@ WV_train_ld = DataLoader(
 WV_train_ld.name = "WakeVision_train_quality"
 
 
-WV_test_ld = DataLoader(WakeVision_test, batch_size=24, shuffle=False,
-                    num_workers=2, pin_memory=pin_memory,
+WV_test_ld = DataLoader(WakeVision_test, batch_size=32, shuffle=False,
+                    num_workers=1, pin_memory=pin_memory,
                     persistent_workers=False, prefetch_factor=1,worker_init_fn=_worker_init,
                          collate_fn=collate_xy,drop_last=False)
 
 WV_test_ld.name = "WakeVision_test"
 
 WV_val_ld = DataLoader(WakeVision_val, batch_size=32, shuffle=False,
-                    num_workers=4, pin_memory=pin_memory,
+                    num_workers=1, pin_memory=pin_memory,
                     persistent_workers=False, prefetch_factor=1,worker_init_fn=_worker_init,
                          collate_fn=collate_xy,drop_last=False)
 
