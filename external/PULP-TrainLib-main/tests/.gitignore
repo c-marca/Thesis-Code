@@ -1,7 +1,0 @@
-build_every_layer_optim.py
-allprof.txt
-build_every_matmul.py
-all_matmul.txt
-start_pulp.sh
-v2_start_pulp.sh
-license_header.txt
