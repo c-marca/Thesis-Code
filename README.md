@@ -178,3 +178,4 @@ Memory figures are taken from PULP-Trainlib's Deployer.
 - add Thesis stub
 - use TrainLib tests to profile performance of NNs
 - Add hyperparam.csv and train_log.csv
+- Add more arguments to the python scripts
