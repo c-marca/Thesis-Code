@@ -1,0 +1,200 @@
+Generating project at location ./Test_MobileNet_128/
+Weights updated up to layer 59
+Max IM2COL size of 221184 bytes @layer 0
+Additional 0 bytes allocated for mixed precision management (size @layer 0, Input)
+Layer 0 (conv2d):  Input: 98304, Coefficients: 432, Biases: 0, Output: 65536, Total: 164272 (data + gradients + biases)
+Layer 1 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 2 (DW):  Input: 65536, Coefficients: 144, Biases: 0, Output: 65536, Total: 131216 (data + gradients + biases)
+Layer 3 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 4 (PW):  Input: 65536, Coefficients: 128, Biases: 0, Output: 65536, Total: 131200 (data + gradients + biases)
+Layer 5 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 6 (DW):  Input: 65536, Coefficients: 144, Biases: 0, Output: 65536, Total: 131216 (data + gradients + biases)
+Layer 7 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 8 (PW):  Input: 65536, Coefficients: 256, Biases: 0, Output: 131072, Total: 196864 (data + gradients + biases)
+Layer 9 (ReLU):  Input: 131072, Coefficients: 0, Biases: 0, Output: 131072, Total: 262144 (data + gradients + biases)
+Layer 10 (DW):  Input: 131072, Coefficients: 288, Biases: 0, Output: 34848, Total: 166208 (data + gradients + biases)
+Layer 11 (ReLU):  Input: 32768, Coefficients: 0, Biases: 0, Output: 32768, Total: 65536 (data + gradients + biases)
+Layer 12 (PW):  Input: 32768, Coefficients: 1024, Biases: 0, Output: 65536, Total: 99328 (data + gradients + biases)
+Layer 13 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 14 (DW):  Input: 65536, Coefficients: 576, Biases: 0, Output: 65536, Total: 131648 (data + gradients + biases)
+Layer 15 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 16 (PW):  Input: 65536, Coefficients: 2048, Biases: 0, Output: 65536, Total: 133120 (data + gradients + biases)
+Layer 17 (ReLU):  Input: 65536, Coefficients: 0, Biases: 0, Output: 65536, Total: 131072 (data + gradients + biases)
+Layer 18 (DW):  Input: 65536, Coefficients: 576, Biases: 0, Output: 18496, Total: 84608 (data + gradients + biases)
+Layer 19 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 20 (PW):  Input: 16384, Coefficients: 4096, Biases: 0, Output: 32768, Total: 53248 (data + gradients + biases)
+Layer 21 (ReLU):  Input: 32768, Coefficients: 0, Biases: 0, Output: 32768, Total: 65536 (data + gradients + biases)
+Layer 22 (DW):  Input: 32768, Coefficients: 1152, Biases: 0, Output: 32768, Total: 66688 (data + gradients + biases)
+Layer 23 (ReLU):  Input: 32768, Coefficients: 0, Biases: 0, Output: 32768, Total: 65536 (data + gradients + biases)
+Layer 24 (PW):  Input: 32768, Coefficients: 8192, Biases: 0, Output: 32768, Total: 73728 (data + gradients + biases)
+Layer 25 (ReLU):  Input: 32768, Coefficients: 0, Biases: 0, Output: 32768, Total: 65536 (data + gradients + biases)
+Layer 26 (DW):  Input: 32768, Coefficients: 1152, Biases: 0, Output: 10368, Total: 44288 (data + gradients + biases)
+Layer 27 (ReLU):  Input: 8192, Coefficients: 0, Biases: 0, Output: 8192, Total: 16384 (data + gradients + biases)
+Layer 28 (PW):  Input: 8192, Coefficients: 16384, Biases: 0, Output: 16384, Total: 40960 (data + gradients + biases)
+Layer 29 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 30 (DW):  Input: 16384, Coefficients: 2304, Biases: 0, Output: 16384, Total: 35072 (data + gradients + biases)
+Layer 31 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 32 (PW):  Input: 16384, Coefficients: 32768, Biases: 0, Output: 16384, Total: 65536 (data + gradients + biases)
+Layer 33 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 34 (DW):  Input: 16384, Coefficients: 2304, Biases: 0, Output: 16384, Total: 35072 (data + gradients + biases)
+Layer 35 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 36 (PW):  Input: 16384, Coefficients: 32768, Biases: 0, Output: 16384, Total: 65536 (data + gradients + biases)
+Layer 37 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 38 (DW):  Input: 16384, Coefficients: 2304, Biases: 0, Output: 16384, Total: 35072 (data + gradients + biases)
+Layer 39 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 40 (PW):  Input: 16384, Coefficients: 32768, Biases: 0, Output: 16384, Total: 65536 (data + gradients + biases)
+Layer 41 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 42 (DW):  Input: 16384, Coefficients: 2304, Biases: 0, Output: 16384, Total: 35072 (data + gradients + biases)
+Layer 43 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 44 (PW):  Input: 16384, Coefficients: 32768, Biases: 0, Output: 16384, Total: 65536 (data + gradients + biases)
+Layer 45 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 46 (DW):  Input: 16384, Coefficients: 2304, Biases: 0, Output: 16384, Total: 35072 (data + gradients + biases)
+Layer 47 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 48 (PW):  Input: 16384, Coefficients: 32768, Biases: 0, Output: 16384, Total: 65536 (data + gradients + biases)
+Layer 49 (ReLU):  Input: 16384, Coefficients: 0, Biases: 0, Output: 16384, Total: 32768 (data + gradients + biases)
+Layer 50 (DW):  Input: 16384, Coefficients: 2304, Biases: 0, Output: 6400, Total: 25088 (data + gradients + biases)
+Layer 51 (ReLU):  Input: 4096, Coefficients: 0, Biases: 0, Output: 4096, Total: 8192 (data + gradients + biases)
+Layer 52 (PW):  Input: 4096, Coefficients: 65536, Biases: 0, Output: 8192, Total: 77824 (data + gradients + biases)
+Layer 53 (ReLU):  Input: 8192, Coefficients: 0, Biases: 0, Output: 8192, Total: 16384 (data + gradients + biases)
+Layer 54 (DW):  Input: 8192, Coefficients: 4608, Biases: 0, Output: 8192, Total: 20992 (data + gradients + biases)
+Layer 55 (ReLU):  Input: 8192, Coefficients: 0, Biases: 0, Output: 8192, Total: 16384 (data + gradients + biases)
+Layer 56 (PW):  Input: 8192, Coefficients: 131072, Biases: 0, Output: 8192, Total: 147456 (data + gradients + biases)
+Layer 57 (ReLU):  Input: 8192, Coefficients: 0, Biases: 0, Output: 8192, Total: 16384 (data + gradients + biases)
+Layer 58 (AvgPool):  Input: 8192, Coefficients: 0, Biases: 0, Output: 512, Total: 8704 (data + gradients + biases)
+Layer 59 (linear):  Input: 512, Coefficients: 2048, Biases: 0, Output: 8, Total: 2568 (data + gradients + biases)
+Max Layer size (including data and gradients): 262144 bytes   @layer 9
+Size of structures in L1 (Single Buffer Mode): 414 bytes
+Size of allocated memory for labels (Single Buffer Mode): 4.0 bytes
+[DNN_Size_Checker]: DNN overflows PULP L1 memory!!
+Expected occupation: 483746.0 bytes vs 131072 available L1 (369.06890869140625%)!
+Total L2 memory occupation: 2009608 bytes
+DNN memory occupation: 483746.0 bytes of 131072 available L1 bytes (369.06890869140625%).
+---------- DNN ARCHITECTURE ----------
+Layer 0: FP16 conv2d, in=[3, 128, 128], wgt=[8, 3, 3, 3], out=[8, 64, 64]
+Layer 1: FP16 ReLU, in=[8, 64, 64], wgt=[8, 1, 1, 8], out=[8, 64, 64]
+Layer 2: FP16 DW, in=[8, 64, 64], wgt=[8, 3, 3, 8], out=[8, 64, 64]
+Layer 3: FP16 ReLU, in=[8, 64, 64], wgt=[8, 1, 1, 8], out=[8, 64, 64]
+Layer 4: FP16 PW, in=[8, 64, 64], wgt=[8, 1, 1, 8], out=[8, 64, 64]
+Layer 5: FP16 ReLU, in=[8, 64, 64], wgt=[8, 1, 1, 8], out=[8, 64, 64]
+Layer 6: FP16 DW, in=[8, 64, 64], wgt=[8, 3, 3, 8], out=[8, 64, 64]
+Layer 7: FP16 ReLU, in=[8, 64, 64], wgt=[8, 1, 1, 8], out=[8, 64, 64]
+Layer 8: FP16 PW, in=[8, 64, 64], wgt=[16, 1, 1, 8], out=[16, 64, 64]
+Layer 9: FP16 ReLU, in=[16, 64, 64], wgt=[16, 1, 1, 16], out=[16, 64, 64]
+Layer 10: FP16 DW, in=[16, 64, 64], wgt=[16, 3, 3, 16], out=[16, 33, 33]
+Layer 11: FP16 ReLU, in=[16, 32, 32], wgt=[16, 1, 1, 16], out=[16, 32, 32]
+Layer 12: FP16 PW, in=[16, 32, 32], wgt=[32, 1, 1, 16], out=[32, 32, 32]
+Layer 13: FP16 ReLU, in=[32, 32, 32], wgt=[32, 1, 1, 32], out=[32, 32, 32]
+Layer 14: FP16 DW, in=[32, 32, 32], wgt=[32, 3, 3, 32], out=[32, 32, 32]
+Layer 15: FP16 ReLU, in=[32, 32, 32], wgt=[32, 1, 1, 32], out=[32, 32, 32]
+Layer 16: FP16 PW, in=[32, 32, 32], wgt=[32, 1, 1, 32], out=[32, 32, 32]
+Layer 17: FP16 ReLU, in=[32, 32, 32], wgt=[32, 1, 1, 32], out=[32, 32, 32]
+Layer 18: FP16 DW, in=[32, 32, 32], wgt=[32, 3, 3, 32], out=[32, 17, 17]
+Layer 19: FP16 ReLU, in=[32, 16, 16], wgt=[32, 1, 1, 32], out=[32, 16, 16]
+Layer 20: FP16 PW, in=[32, 16, 16], wgt=[64, 1, 1, 32], out=[64, 16, 16]
+Layer 21: FP16 ReLU, in=[64, 16, 16], wgt=[64, 1, 1, 64], out=[64, 16, 16]
+Layer 22: FP16 DW, in=[64, 16, 16], wgt=[64, 3, 3, 64], out=[64, 16, 16]
+Layer 23: FP16 ReLU, in=[64, 16, 16], wgt=[64, 1, 1, 64], out=[64, 16, 16]
+Layer 24: FP16 PW, in=[64, 16, 16], wgt=[64, 1, 1, 64], out=[64, 16, 16]
+Layer 25: FP16 ReLU, in=[64, 16, 16], wgt=[64, 1, 1, 64], out=[64, 16, 16]
+Layer 26: FP16 DW, in=[64, 16, 16], wgt=[64, 3, 3, 64], out=[64, 9, 9]
+Layer 27: FP16 ReLU, in=[64, 8, 8], wgt=[64, 1, 1, 64], out=[64, 8, 8]
+Layer 28: FP16 PW, in=[64, 8, 8], wgt=[128, 1, 1, 64], out=[128, 8, 8]
+Layer 29: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 30: FP16 DW, in=[128, 8, 8], wgt=[128, 3, 3, 128], out=[128, 8, 8]
+Layer 31: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 32: FP16 PW, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 33: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 34: FP16 DW, in=[128, 8, 8], wgt=[128, 3, 3, 128], out=[128, 8, 8]
+Layer 35: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 36: FP16 PW, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 37: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 38: FP16 DW, in=[128, 8, 8], wgt=[128, 3, 3, 128], out=[128, 8, 8]
+Layer 39: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 40: FP16 PW, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 41: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 42: FP16 DW, in=[128, 8, 8], wgt=[128, 3, 3, 128], out=[128, 8, 8]
+Layer 43: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 44: FP16 PW, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 45: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 46: FP16 DW, in=[128, 8, 8], wgt=[128, 3, 3, 128], out=[128, 8, 8]
+Layer 47: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 48: FP16 PW, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 49: FP16 ReLU, in=[128, 8, 8], wgt=[128, 1, 1, 128], out=[128, 8, 8]
+Layer 50: FP16 DW, in=[128, 8, 8], wgt=[128, 3, 3, 128], out=[128, 5, 5]
+Layer 51: FP16 ReLU, in=[128, 4, 4], wgt=[128, 1, 1, 128], out=[128, 4, 4]
+Layer 52: FP16 PW, in=[128, 4, 4], wgt=[256, 1, 1, 128], out=[256, 4, 4]
+Layer 53: FP16 ReLU, in=[256, 4, 4], wgt=[256, 1, 1, 256], out=[256, 4, 4]
+Layer 54: FP16 DW, in=[256, 4, 4], wgt=[256, 3, 3, 256], out=[256, 4, 4]
+Layer 55: FP16 ReLU, in=[256, 4, 4], wgt=[256, 1, 1, 256], out=[256, 4, 4]
+Layer 56: FP16 PW, in=[256, 4, 4], wgt=[256, 1, 1, 256], out=[256, 4, 4]
+Layer 57: FP16 ReLU, in=[256, 4, 4], wgt=[256, 1, 1, 256], out=[256, 4, 4]
+Layer 58: FP16 AvgPool, in=[256, 4, 4], wgt=[256, 4, 4, 256], out=[256, 1, 1]
+Layer 59: FP16 linear, in=[256, 1, 1], wgt=[2, 1, 1, 256], out=[2, 1, 1]
+--------------------------------------
+[deployment_utils.GenerateNet]: Setting last layer's output to float for PyTorch compatibility with loss function backward (future fix).
+[TEST!!! max_input_dim] RES = 65536.0
+[TEST!!! max_wgt_dim] RES = 65536.0
+[TEST!!! max_bias_dim] RES = 0.0
+No blockstranspose buffer detected.
+
+Layer 59: stop_backprop = True, update_layer = 1 (have last_updated_layer = 59)
+Layer 58: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 57: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 56: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 55: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 54: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 53: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 52: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 51: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 50: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 49: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 48: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 47: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 46: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 45: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 44: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 43: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 42: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 41: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 40: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 39: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 38: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 37: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 36: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 35: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 34: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 33: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 32: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 31: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 30: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 29: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 28: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 27: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 26: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 25: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 24: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 23: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 22: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 21: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 20: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 19: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 18: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 17: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 16: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 15: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 14: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 13: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 12: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 11: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 10: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 9: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 8: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 7: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 6: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 5: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 4: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 3: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 2: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 1: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+Layer 0: stop_backprop = True, update_layer = 0 (have last_updated_layer = 59)
+PULP project generation successful!

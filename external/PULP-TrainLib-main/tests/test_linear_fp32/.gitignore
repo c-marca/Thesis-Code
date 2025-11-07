@@ -1,0 +1,11 @@
+BUILD/
+log.txt
+linear-data.h
+step-check.h
+output_eval.h
+runs.txt
+gapsdk_script.sh
+**/__pycache__/
+log_bkp.txt
+runs_bkp.txt
+BUILD_bkp/
