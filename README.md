@@ -9,22 +9,47 @@ python -m pip install pytorchcv
 python -m pip install onnx
 python -m pip install tqdm
 python -m pip install datasets
+python -m pip install torchinfo
 
 ```
+# Tutorial
+Clone the REPO
+```bash
+git clone https://github.com/c-marca/Thesis-Code.git
 
+```
+to pull SHARDS:
+```bash
+git lfs pull
+  ```
+Activate your chosen environment es. :
+```bash
+conda activate myenv
+```
+to run the finetuner.py with default arguments simply
+
+```bash
+python finetuner.py
+```
+to add arguments es. :
+
+```bash
+python finetuner --op1 --opt2 value
+
+```
 # Datasets
+Included:
 -Wake Vision
   - 100k imgs train quality split (4.58 GB)
-
-
-**Full Wake Vision Splits:**
-
-- c.a 18.5k val images (883 MB):
+  -  c.a 18.5k val images (883 MB):
   - functional
   - uploaded
 - c.a 55.7k test images(2.6 GB):
    - functional
    - uploaded
+**Full Wake Vision Splits:**
+
+On SDD
 - c.a 1.2M train images(55 GB):
   - functional
 
@@ -32,7 +57,7 @@ Dataset shards are under a datasets directory:
 
 -Shards are already resized to **128x128 resolution**  for memory occupation, download and training overhead considerations.
 
-  
+
   <img src="/assets/wakevision_random.png" width="300" alt="Diagram">
 
 TO PULL SHARDS:
@@ -74,8 +99,8 @@ TO DO:
 - MobileNet_unfr (pretrained and unfrozen)
 To show effectiveness of Transfer Learning  
 
-- MobileNet is imported from **pytorchcv**
-- MobileNetFD is imported from **pytorchcv** 
+ MobileNet is imported from **pytorchcv**
+ MobileNetFD is imported from **pytorchcv** 
 PRETRAINING LOGS ARE PROVIDED
 
 # Finetuner
