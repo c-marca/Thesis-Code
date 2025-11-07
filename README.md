@@ -149,8 +149,12 @@ Inside there are **Custom Deployers** for MobileNet and MobileNetFD.
   * see torchsummary log     
 * PULP-TrainLib's Deployer does, so we take this as the memory occupation figure.
   * see respective log
+ 
+  * 
 -Pretraining logs
  https://pypi.org/project/pytorchcv/
+
+
 Future Fork of PULP-Trainlib with model deployers
 # Training
 This section will detail the training process:
@@ -178,4 +182,4 @@ Memory figures are taken from PULP-Trainlib's Deployer.
 - add Thesis stub
 - use TrainLib tests to profile performance of NNs
 - Add hyperparam.csv and train_log.csv
-- Add more arguments to the python scripts
+- Add more arguments to the python scripts 
