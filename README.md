@@ -37,6 +37,21 @@ to add arguments es. :
 python finetuner --op1 --opt2 value
 
 ```
+To download shards:
+
+```bash
+cd ./datasets
+python dataset_generator.py
+
+```
+The test split has a broken label. 
+To fix this run:
+```bash
+
+python shard_fixer.py
+
+```
+
 # Datasets
 Included:
 -Wake Vision
