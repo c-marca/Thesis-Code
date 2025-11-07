@@ -12,6 +12,7 @@ import time
 import argparse                                                                               
 from tqdm.auto import tqdm                                  # for progress bar and CLI  messages for dataset generation
 import csv                                                    # for training logs
+from torchinfo import summary
 import models 
 import loaders
 
@@ -55,11 +56,12 @@ dir_name = args.dir_name      # e.g., "out/m.pt" or None
 # Insert results folder here AND dataset folders
 
 project_name = './training/Results'
-project_dir = './' + project_name
-plots_dir = project_dir + '/plots/'
+#project_dir = './' + project_name
+plots_dir = project_name + '/plots/'
 models_dir = project_name + '/checkpoints/'
+logs_dir = project_name + '/logs/'
 
-os.makedirs(project_dir, exist_ok=True)
+os.makedirs(project_name, exist_ok=True)
 os.makedirs(plots_dir, exist_ok=True)
 os.makedirs(models_dir, exist_ok=True)
 
@@ -100,6 +102,21 @@ class CSVLogger:
 
     def close(self):
         self.f.close()
+
+def write_torchinfo(model, path, input_size=(1, 3, 128, 128)):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device).eval()
+    info = summary(
+        model, 
+        input_size=input_size,  # includes batch dim
+        device=device,
+        col_names=("input_size","output_size","num_params","kernel_size","mult_adds"),
+        depth=4,  # adjust as needed
+        verbose=0
+    )
+    with open(path, "w") as f:
+        f.write(str(info))
+
 
 
 def test(net,test_loader):
@@ -206,8 +223,9 @@ IMNET_STD  = (0.229, 0.224, 0.225)
 
 def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
 
-
-
+    
+    print("Initial Test")
+    test_loss,test_acc = test(net , test_loader = loaders.WV_test_ld)
     print("Initial Validation")
     val_loss,val_acc = validate(net, loaders.WV_val_ld)
 
@@ -217,8 +235,7 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     std = torch.as_tensor(IMNET_STD, dtype=torch.float32, device=device).view(1, 3, 1, 1)
 
     # FP32 speed knobs
-    torch.backends.cuda.matmul.fp32_precision = "high"      
-    torch.backends.cudnn.conv.fp32_precision = "tf32"       
+ 
     torch.backends.cudnn.benchmark = True
 
 
@@ -238,7 +255,7 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     optimizer = optim.SGD(
         pg, lr=learning_rate, momentum=momentum, weight_decay=weight_decay
     )
-    loss_fn = nn.CrossEntropyLoss(ignore_index=255)
+    loss_fn = nn.CrossEntropyLoss()
 
     grad_accum = 1  
     log_every_steps = 100 * max(1, grad_accum)
@@ -254,11 +271,18 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     val_acc_list.append(val_acc)
 
     fields = [
-        "split", "epoch", "step", "seen",
-        "lr","train_loss", "val_loss", "val_acc"
+        "model","split","batch_size","training_time", "epoch", "step", "imgs_seen",
+        "lr","momentum","weight_decay","train_loss", "val_loss", "val_acc","test_loss","test_acc"
     ]
 
-    logger = CSVLogger(path = project_dir + "/logs", fieldnames = fields)
+    logger = CSVLogger(path = logs_dir + "train_logs.csv" , fieldnames = fields)
+    logger.log(
+            model=net.name,
+            split=train_loader.name,
+            batch_size=bs,
+            test_loss = test_loss,
+            test_acc = test_acc
+    )
     for epoch in range(epochs):
         net.train()
         optimizer.zero_grad(set_to_none=True)
@@ -288,22 +312,22 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
                     torch.cuda.synchronize()
                 delta = time.perf_counter() - t_last
 
-
-
                 if bs is not None:
                     ips = (bs * log_every_steps) / max(delta, 1e-9)
                     print(f"epoch {epoch} step {step+1} image = {bs*step} "
                           f"loss={float(loss.detach()*grad_accum):.4f} imgs/s={ips:.0f}")
                     logger.log(
-                                    split="train",
+                                    
                                     epoch=epoch,
                                     step=step,
-                                    seen= bs*step,
+                                    imgs_seen= bs*step,
                                     lr=learning_rate,
-                                    train_loss=float(loss.item()),
+                                    momentum = momentum,
+                                    weight_decay = weight_decay,
+                                    train_loss=float(loss.detach()*grad_accum),
                                     val_loss = val_loss,
                                     val_acc=val_acc,
-                            )
+                        )
                 else:
                     print(f"epoch {epoch} step {step+1} loss={float(loss.detach()*grad_accum):.4f}")
                 t_last = time.perf_counter()
@@ -322,6 +346,22 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     end_time = time.time()
     print(f"Total training time: {(end_time - start_time)/60:.2f} minutes")
     torch.save(net.state_dict(), f"{models_dir}{net._get_name()}_final.pth")
+    print("Final Test")
+    test_loss,test_acc =test(net =net , test_loader = loaders.WV_test_ld)
+    logger.log(
+            epoch=epoch,
+            step=step,
+            imgs_seen= bs*step,
+            lr=learning_rate,
+            momentum=momentum,
+            weight_decay=weight_decay,
+            train_loss=float(loss.detach()*grad_accum),
+            val_loss = val_loss,
+            val_acc=val_acc,
+            test_loss = test_loss,
+            test_acc =test_acc,
+            training_time = (end_time - start_time)/60
+                        )
     print("Saving plots")
     if val_acc_list:                       # not empty
         plt.figure()
@@ -345,7 +385,7 @@ def train(net, train_loader, epochs, learning_rate, momentum, weight_decay):
     else:
         print("val_acc_list is empty; nothing to plot.")
 
-    # Add .csv log
+    write_torchinfo(net, logs_dir + "mem_log.txt", input_size=(1, 3, 128, 128))
 
 
 def LoadModel(net ,model_path):
@@ -362,13 +402,9 @@ def hyperparameter_explorator(net,epochs,lr_list):
 '''
 
 
-print("Initial Test")
-test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
 
-train(net=models.MobileNetFT,train_loader=loaders.WV_train_ld,epochs=1,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
 
-print("Final Validation")
-validate(net = models.MobileNetFT, val_loader = loaders.WV_val_ld)
-print("Final Test")
-test(net = models.MobileNetFT, test_loader = loaders.WV_test_ld)
+train(net=models.MobileNet_no_pre,train_loader=loaders.WV_train_ld,epochs=1,learning_rate=0.01,momentum = 0.9, weight_decay = 1e-4 )
+
+
 
